@@ -1,0 +1,52 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+        
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.2'
+        
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+
+ext {
+    mainGame = getMainGame()
+    println "mainGame:" + mainGame
+}
+
+/**
+ * 根据任务名称获取主游戏模块。为了主游戏模块的动态依赖
+ */
+def getMainGame() {
+    final defaultFlavor = ":variants:poker"
+    Gradle gradle = getGradle()
+    //.getTaskNames()[0]也可以.但Jenkins构建时请使用getTaskRequests
+    String taskName = gradle.getStartParameter().getTaskRequests().toString()
+    println "taskName : " + taskName
+    if (taskName != null) {
+        if (taskName.contains("Poker")||taskName.contains("poker")){
+            return  ":variants:poker"
+        }else if(taskName.contains("Majiang")||taskName.contains("majiang")){
+            return  ":variants:majiang"
+        }
+    }
+    return defaultFlavor
+}
